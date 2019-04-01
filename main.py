@@ -38,7 +38,7 @@ class Ebay_Selenium:
             rtnMsg["stat"] = "error"
             rtnMsg["msg"] = "Can't login."
         except Exception:
-            rtnMsg["stat"] = "ok",
+            rtnMsg["stat"] = "ok"
             rtnMsg["msg"] = "Login success."
         return rtnMsg
 
@@ -111,7 +111,7 @@ class Ebay_Selenium:
             return rtnMsg
 
         rtnMsg["stat"] = "ok"
-        rtnMsg["msg"] = ""
+        rtnMsg["msg"] = "Buy success."
         return rtnMsg
 
     def Close(self):
@@ -125,23 +125,30 @@ class Ebay_Selenium:
 
     def keyIn(self, string):
         actions = ActionChains(self.driver)
+        actions.key_down(Keys.CONTROL).send_keys('a').key_up(Keys.CONTROL)
+        actions.key_down(Keys.BACKSPACE).key_up(Keys.BACKSPACE)
+        actions.perform()
         for i in range(0, len(string)):
-            actions.key_down(string[i])
-            actions.key_up(string[i])
+            actions.key_down(string[i]).key_up(string[i])
         actions.perform()
 
 
 if __name__ == "__main__":
     URL = "https://www.ebay.com/itm/1986-Philippines-GOLD-2500-Pesos-CORY-REAGAN-Official-US-visit-in-PROOF/192864099482"
+    action = Ebay_Selenium()
     print("Login ebay.")
     username = input("Username: ")
     password = input("Password: ")
-    action = Ebay_Selenium()
-    print(action.Login(username=username, password=password))
-    sleep(3)
-    print(action.Buy(url=URL))
-    sleep(5)
-    print(action.Payment(method="card", card="",
-                         date="", code="", first_name="", last_name=""))
+    rs = action.Login(username=username, password=password)
+    print(rs)
+    if rs["stat"] == "ok":
+        sleep(3)
+        rs = action.Buy(url=URL)
+        print(rs)
+        if rs["stat"] == "ok":
+            sleep(5)
+            rs = action.Payment(method="card", card="",
+                                date="", code="", first_name="", last_name="")
+            print(rs)
     # print(action.Payment(method="paypal", email="", pwd=""))
     # action.Close()
