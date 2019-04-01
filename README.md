@@ -10,6 +10,8 @@ $ git clone https://github.com/macs1207/Ebay-Autobuy
 ```
 $ pip3 install selenium
 ```
+- Download [Selenium WebDriver](https://www.seleniumhq.org/projects/webdriver)
+- Put it on '/usr/local/bin' if you use linux.
 
 ### By python3
 ```
