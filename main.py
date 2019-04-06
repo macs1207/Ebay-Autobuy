@@ -5,14 +5,14 @@ from selenium.webdriver.common.keys import Keys
 from time import sleep
 
 
-class Ebay_Selenium:
+class EbaySelenium:
     def __init__(self, proxy_ip=None):
         if proxy_ip != None:
             proxy = Proxy({
                 "proxyType": ProxyType.MANUAL,
-                "httpProxy": proxy,
-                "ftpProxy": proxy,
-                "sslProxy": proxy,
+                "httpProxy": proxy_ip,
+                "ftpProxy": proxy_ip,
+                "sslProxy": proxy_ip,
                 "noProxy": ""
             })
             self.driver = webdriver.Firefox(proxy=proxy)
@@ -23,7 +23,7 @@ class Ebay_Selenium:
     def Login(self, username, password):
         self.driver.get("https://www.ebay.com/signin")
         element = self.driver.find_elements_by_xpath(
-            u"//div[@class='signin-view-container']/div")
+            "//div[@class='signin-view-container']/div")
         self.moveToClick(element[0])
         self.keyIn(username)
         self.moveToClick(element[1])
@@ -34,7 +34,7 @@ class Ebay_Selenium:
         rtnMsg = {}
         try:
             self.driver.find_element_by_xpath(
-                u"//span[@class='inline-notice__status']/span")
+                "//span[@class='inline-notice__status']/span")
             rtnMsg["stat"] = "error"
             rtnMsg["msg"] = "Can't login."
         except Exception:
@@ -47,7 +47,7 @@ class Ebay_Selenium:
         rtnMsg = {}
         try:
             self.moveToClick(self.driver.find_element_by_xpath(
-                u"//div[@class='u-flL']"))  # Buy it now
+                "//div[@class='u-flL']"))  # Buy it now
             self.moveToClick(self.driver.find_element_by_xpath(
                 "//span[@id='spn_v4-2']"))  # Commit to buy
             self.moveToClick(self.driver.find_element_by_xpath(
@@ -66,6 +66,11 @@ class Ebay_Selenium:
                 rtnMsg["msg"] = "Can't buy, {}.".format(e)
         return rtnMsg
 
+    '''
+        Payment(method="card", card, date, code, first_name, last_name)
+        Payment(method="paypal", email, password)
+    '''
+
     def Payment(self, method="card", **kwargs):
         rtnMsg = {}
         try:
@@ -79,32 +84,34 @@ class Ebay_Selenium:
             sleep(3)
             try:
                 self.moveToClick(self.driver.find_element_by_xpath(
-                    u"//input[@id='cardNumber']"))
+                    "//input[@id='cardNumber']"))
                 self.keyIn(kwargs["card"])
                 self.moveToClick(self.driver.find_element_by_xpath(
-                    u"//input[@id='cardExpiryDate']"))
+                    "//input[@id='cardExpiryDate']"))
                 self.keyIn(kwargs["date"])
                 self.moveToClick(self.driver.find_element_by_xpath(
-                    u"//input[@id='securityCode']"))
+                    "//input[@id='securityCode']"))
                 self.keyIn(kwargs["code"])
                 self.moveToClick(self.driver.find_element_by_xpath(
-                    u"//input[@id='cardHolderFirstName']"))
+                    "//input[@id='cardHolderFirstName']"))
                 self.keyIn(kwargs["first_name"])
                 self.moveToClick(self.driver.find_element_by_xpath(
-                    u"//input[@id='cardHolderLastName']"))
+                    "//input[@id='cardHolderLastName']"))
                 self.keyIn(kwargs["last_name"])
                 self.moveToClick(self.driver.find_element_by_xpath(
-                    u"//input[@id='cardHolderLastName']"))
+                    "//input[@id='cardHolderLastName']"))
                 self.moveToClick(self.driver.find_element_by_xpath(
-                    u"//div/span/div/button"))
+                    "//div/span/div/button"))
             except Exception as e:
                 pass
             sleep(5)
             self.moveToClick(self.driver.find_element_by_xpath(
-                u"//div[@class='call-to-action']"))
+                "//div[@class='call-to-action']"))
         elif method == "paypal":
             self.moveToClick(targets[1])  # Paypal
-            # Not
+            '''
+                Paypal Login
+            '''
         else:
             rtnMsg["stat"] = "error",
             rtnMsg["msg"] = "Arg error."
@@ -130,12 +137,13 @@ class Ebay_Selenium:
         actions.perform()
         for i in range(0, len(string)):
             actions.key_down(string[i]).key_up(string[i])
+            sleep(0.05)
         actions.perform()
 
 
 if __name__ == "__main__":
-    URL = "https://www.ebay.com/itm/1986-Philippines-GOLD-2500-Pesos-CORY-REAGAN-Official-US-visit-in-PROOF/192864099482"
-    action = Ebay_Selenium()
+    URL = ""  # The item's URL that you want to buy.
+    action = EbaySelenium()
     print("Login ebay.")
     username = input("Username: ")
     password = input("Password: ")
@@ -147,8 +155,7 @@ if __name__ == "__main__":
         print(rs)
         if rs["stat"] == "ok":
             sleep(5)
-            rs = action.Payment(method="card", card="",
+            rs = action.Payment(method="", card="",
                                 date="", code="", first_name="", last_name="")
             print(rs)
-    # print(action.Payment(method="paypal", email="", pwd=""))
     # action.Close()
